@@ -97,10 +97,10 @@ export const queryStore = <T extends AnyConstructor<object>>(base: T) =>
       );
     }
 
-    from$<T>(
-      observableFactory: { (): Observable<T> },
+    from$(
+      observableFactory: { (): Observable<any> },
       actionOrActions: Action | Action[] = []
-    ): Observable<T> {
+    ): Observable<any> {
       const actions = this._toActionArray(actionOrActions);
 
       const cacheKey = actions[0];
@@ -120,7 +120,7 @@ export const queryStore = <T extends AnyConstructor<object>>(base: T) =>
           return false;
         }),
         startWith(true),
-        exhaustMap((_) => this._from<T>(cacheKey, observableFactory))
+        exhaustMap((_) => this._from(cacheKey, observableFactory))
       );
     }
 
@@ -133,10 +133,10 @@ export const queryStore = <T extends AnyConstructor<object>>(base: T) =>
       this._actionCacheKeysMap.set(action, cacheKeys);
     }
 
-    _from<T>(
+    _from(
       cacheKey: CacheKey,
-      observableFactory: { (): Observable<T> }
-    ): Observable<T> {
+      observableFactory: { (): Observable<any> }
+    ): Observable<any> {
       if (!this._cacheKeyObservableMap.get(cacheKey)) {
         const obs$ = observableFactory().pipe(
           shareReplay({ bufferSize: 1, refCount: true })
@@ -150,14 +150,14 @@ export const queryStore = <T extends AnyConstructor<object>>(base: T) =>
       return this._cacheKeyObservableMap.get(cacheKey) as Observable<T>;
     }
 
-    withRefresh<T>(
-      observable: Observable<T>,
+    withRefresh(
+      observable: Observable<any>,
       actions: Action | Action[]
     ): Observable<T> {
       return observable.pipe(tap((_) => dispatcher.next(actions)));
     }
 
-    select<T>(cacheKey: string): Observable<T> {
+    select(cacheKey: string): Observable<any> {
       return dispatcher.pipe(
         filter((action) => action == this._toStateChangedAction(cacheKey)),
         startWith(true),

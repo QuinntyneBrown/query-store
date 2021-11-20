@@ -14,11 +14,15 @@ export declare const queryStore: <T extends AnyConstructor<object>>(base: T) => 
         _isRefreshAction(action: Action[] | Action): boolean;
         _isNullifyAction(action: Action[] | Action): boolean;
         _anyActionsMappableTo(actions: Action[], refreshAction: Action): boolean;
-        from$<T_1>(observableFactory: () => Observable<T_1>, actionOrActions?: Action | Action[]): Observable<T_1>;
+        from$(observableFactory: {
+            (): Observable<any>;
+        }, actionOrActions?: Action | Action[]): Observable<any>;
         _insertActionCacheKeyMapEntry(action: Action, cacheKey: CacheKey): void;
-        _from<T_2>(cacheKey: CacheKey, observableFactory: () => Observable<T_2>): Observable<T_2>;
-        withRefresh<T_3>(observable: Observable<T_3>, actions: Action | Action[]): Observable<T_3>;
-        select<T_4>(cacheKey: string): Observable<T_4>;
+        _from(cacheKey: CacheKey, observableFactory: {
+            (): Observable<any>;
+        }): Observable<any>;
+        withRefresh(observable: Observable<any>, actions: Action | Action[]): Observable<T>;
+        select(cacheKey: string): Observable<any>;
     };
 } & T;
 export declare const QueryStore: {
@@ -33,11 +37,17 @@ export declare const QueryStore: {
         _isRefreshAction(action: Action[] | Action): boolean;
         _isNullifyAction(action: Action[] | Action): boolean;
         _anyActionsMappableTo(actions: Action[], refreshAction: Action): boolean;
-        from$<T>(observableFactory: () => Observable<T_1>, actionOrActions?: Action | Action[]): Observable<T>;
+        from$(observableFactory: {
+            (): Observable<any>;
+        }, actionOrActions?: Action | Action[]): Observable<any>;
         _insertActionCacheKeyMapEntry(action: Action, cacheKey: CacheKey): void;
-        _from<T_1>(cacheKey: CacheKey, observableFactory: () => Observable<T_2>): Observable<T_1>;
-        withRefresh<T_2>(observable: Observable<T_2>, actions: Action | Action[]): Observable<T_2>;
-        select<T_3>(cacheKey: string): Observable<T_3>;
+        _from(cacheKey: CacheKey, observableFactory: {
+            (): Observable<any>;
+        }): Observable<any>;
+        withRefresh(observable: Observable<any>, actions: Action | Action[]): Observable<{
+            new (): {};
+        }>;
+        select(cacheKey: string): Observable<any>;
     };
 } & {
     new (): {};
