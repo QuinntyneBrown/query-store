@@ -29,11 +29,11 @@ const dispatcher: Subject<Action | Action[]> = new Subject();
 export const queryStore =  <T extends AnyConstructor<object>>(base : T) =>
 class extends base {
 
-  readonly _cacheKeyObservableMap: Map<CacheKey, Observable<any>> = new Map();
+  private readonly _cacheKeyObservableMap: Map<CacheKey, Observable<any>> = new Map();
 
-  readonly _actionCacheKeysMap: Map<Action, CacheKey[]> = new Map();
+  private readonly _actionCacheKeysMap: Map<Action, CacheKey[]> = new Map();
 
-  readonly _id = guid();
+  private readonly _id = guid();
 
   constructor(...args: any[]) {
     super(...args);
@@ -50,7 +50,7 @@ class extends base {
     .subscribe();
   }
 
-  _nullifyCacheEntriesThatDependOn(actions:Action[]) {
+  private _nullifyCacheEntriesThatDependOn(actions:Action[]) {
     for (var i = 0; i < actions.length; i++) {
       const cacheKeys = this._actionCacheKeysMap.get(actions[i]) || [];
       for(let j = 0; j < cacheKeys.length; j++) {
@@ -59,34 +59,34 @@ class extends base {
     }
   }
 
-  _toRefreshAction(action: Action): Action {
+  private _toRefreshAction(action: Action): Action {
     return `${action}:${this._id}`;
   }
 
-  _toStateChangedAction(action: Action | Action[]): Action {
+  private _toStateChangedAction(action: Action | Action[]): Action {
     return Array.isArray(action) ? null : `${action}:${StateChangedAction}`;
   }
 
-  _toActionArray(actionOrActions: Action | Action[] = []): Action[] {
+  private _toActionArray(actionOrActions: Action | Action[] = []): Action[] {
     if(Array.isArray(actionOrActions) && actionOrActions.length == 0) {
       actionOrActions.push(guid())
     }
     return Array.isArray(actionOrActions) ? actionOrActions : [actionOrActions];
   }
 
-  _isRefreshAction(action:Action[] | Action):boolean {
+  private _isRefreshAction(action:Action[] | Action):boolean {
     return action && action != this._toStateChangedAction(action) && !Array.isArray(action) && action.indexOf(this._id) > -1
   }
 
-  _isNullifyAction(action: Action[] | Action): boolean {
+  private _isNullifyAction(action: Action[] | Action): boolean {
     return action && action != this._toStateChangedAction(action) && !this._isRefreshAction(action);
   }
 
-  _anyActionsMappableTo(actions: Action[], refreshAction:Action):boolean {
+  private _anyActionsMappableTo(actions: Action[], refreshAction:Action):boolean {
     return actions.map(j => this._toRefreshAction(j)).indexOf(refreshAction) > -1
   }
 
-  from$<T>(observableFactory: {(): Observable<T>}, actionOrActions: Action | Action[] = []): Observable<T> {
+  protected from$<T>(observableFactory: {(): Observable<T>}, actionOrActions: Action | Action[] = []): Observable<T> {
 
     const actions = this._toActionArray(actionOrActions);
 
@@ -103,7 +103,7 @@ class extends base {
 
   }
 
-  _insertActionCacheKeyMapEntry(action: Action, cacheKey: CacheKey) {
+  private _insertActionCacheKeyMapEntry(action: Action, cacheKey: CacheKey) {
     var cacheKeys = this._actionCacheKeysMap.get(action);
     cacheKeys = cacheKeys || [];
     if (cacheKeys.filter(x => x == cacheKey)[0] == null) {
@@ -112,7 +112,7 @@ class extends base {
     this._actionCacheKeysMap.set(action, cacheKeys);
   }
 
-  _from<T>(cacheKey: CacheKey, observableFactory: { (): Observable<T> }): Observable<T> {
+  private _from<T>(cacheKey: CacheKey, observableFactory: { (): Observable<T> }): Observable<T> {
 
     if (!this._cacheKeyObservableMap.get(cacheKey)) {
 
@@ -127,13 +127,13 @@ class extends base {
 
   }
 
-  withRefresh<T>(observable: Observable<T>, actions:Action | Action[]): Observable<T> {
+  protected withRefresh<T>(observable: Observable<T>, actions:Action | Action[]): Observable<T> {
     return observable.pipe(
       tap(_ => dispatcher.next(actions))
     );
   }
 
-  select<T>(cacheKey: string): Observable<T> {
+  public select<T>(cacheKey: string): Observable<T> {
     return dispatcher
     .pipe(
       filter(action => action == this._toStateChangedAction(cacheKey)),

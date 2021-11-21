@@ -9,7 +9,7 @@
     "moduleResolution": "Node",
     "noImplicitOverride": true,
     "sourceMap": true,
-    "declaration": true,
+    "declaration": false,
     "noImplicitUseStrict": true,
     "experimentalDecorators": true,
   }
